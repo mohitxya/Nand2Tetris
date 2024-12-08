@@ -1,16 +1,16 @@
-This is a toy implementation of the famous 'Hack' computer from Shimon Schocken and Noam Nisan's famous course "Nand to Tetris".
+This is a toy implementation of the famous 'Hack' computer from Shimon Schocken and Noam Nisan's famous course "Nand to Tetris".  
 
-The project is divided into 12 weeks. Each week moves up by some degree of abstraction:
+The project is divided into 12 weeks. Each week moves up by some degree of abstraction:  
 
-- Week-1  
-- Week-2  
-- Week-3  
-- Week-4  
-- Week-5  
-- Week-6  
-- Week-7  
-- Week-8  
-- Week-9  
-- Week-10  
-- Week-11  
-- Week-12  
+- Week-1: Boolean Logic  
+- Week-2: Boolean Arithmetic  
+- Week-3: Sequential Logic  
+- Week-4: Machine Language  
+- Week-5: Computer Architecture  
+- Week-6: Assembler  
+- Week-7: Virtual Machine I: Stack Arithmetic  
+- Week-8: Virtual Machine II: Program Control  
+- Week-9: High-Level Language  
+- Week-10: Compiler I: Syntax Analysis  
+- Week-11: Compiler II: Code Generation  
+- Week-12: Operating System  
