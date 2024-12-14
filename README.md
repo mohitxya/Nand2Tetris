@@ -1,6 +1,6 @@
 This is a toy implementation of the famous 'Hack' computer from Shimon Schocken and Noam Nisan's famous course "Nand to Tetris".  
 
-The project is divided into 12 weeks. Each week moves up by some degree of abstraction:  
+The project is divided into 12 weeks. Each week moves up by a certain level f abstraction:  
 
 - Week-1: Boolean Logic  
 - Week-2: Boolean Arithmetic  
