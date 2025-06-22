@@ -2,9 +2,13 @@
     Approach: 
     1. Open file and read it's contents.
     2. Discard empty lines and comments.
+
     FIRST PASS:
-    3. Maintain a list and a dictionary. (List: for instructions, Dictionary: new labels,position you encounter)
+
+    3. Maintain a list and a dictionary. (List: for instructions, Dictionary(symbol table): new labels,position you encounter)
+    
     SECOND PASS: 
+
     4. Put instructions through Parser and Code. Resolve variables (if not in symbol_table assign addresses to them) and replace with 
     built in symbol table symbols.
     
@@ -25,17 +29,11 @@ symbol_table = {
 }
 
 instructions = []
-labels={}
 line_number=0
 
 if __name__=="__main__":
     with open("./program.asm","r") as file:
-        '''instructions = [
-            line.split("//")[0].strip()  
-            for line in file
-            if line.strip() and not line.strip().startswith("//")  
-        ]'''
-
+        # 1st pass: 
         
         for line in file:
             line = line.strip()
@@ -44,9 +42,16 @@ if __name__=="__main__":
 
                 if line.startswith('(') and line.endswith(')'):
                     label = line[1:-1]
-                    labels[label] = line_number  # Map label to current instruction address
+                    if label.upper() not in symbol_table:
+                        symbol_table[label] = line_number
+                    else:
+                        raise ValueError(f"Label '{label}' already defined in symbol table!")
+
                 else:
                     instructions.append(line)
                     line_number += 1  # Only increment for real instructions
-                print(instructions)
+        print(instructions)
+        print(symbol_table)
         # Labels should not have a line number. So instead of list use dictionary and give 0 line number
+
+        
