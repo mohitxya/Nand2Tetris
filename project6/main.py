@@ -86,12 +86,11 @@ if __name__=="__main__":
                     val=var_add
                     var_add+=1
                 bin_code = format(val, '016b')
-
                 binary.append(bin_code)
             # A instruction without label
             elif instruction[0]=='@' and  instruction.split("@")[1].isdigit():
-                val = parse.address(instruction)
-                bin_code='0'+code.address(val)
+                val = int(parse.address(instruction))
+                bin_code=code.address(val)
                 binary.append(bin_code)
             # C instruction 
             else:
