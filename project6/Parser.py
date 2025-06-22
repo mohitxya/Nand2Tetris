@@ -25,7 +25,7 @@ class Parser:
             instruction=instruction.split("=")[0]
             pass
         else:
-            instruction="null"
+            return "null"
         
 
         return instruction
@@ -41,41 +41,33 @@ class Parser:
             # comp;jmp
             instruction=instruction.split(";")[0]
         else:
-            instruction=None
+            return "null"
 
-        return instruction
+        return instruction.upper()
     def jump(self,s):
         instruction=s.replace(" ","")
         if '=' in instruction and ';' in instruction:
             # dest = comp; jmp
             temp=instruction.split(";")[1]
             if  temp.upper() in self.jump_l:
-                return temp
+                return temp.upper()
         elif '=' in instruction:
             # dest=comp
-            instruction="null"
+            return "null"
         elif ';' in instruction:
             # comp;jmp
             temp=instruction.split(";")[1]
             if temp.upper() in self.jump_l:
-                return temp
+                return temp.upper()
         elif instruction.upper() in self.jump_l:
-            return instruction
+            return instruction.upper()
         return "null"
     
     def address(self, s):
         instruction=s.replace(" ","")
         if "@" in instruction:
-            instruction=instruction.split("@")[1]
+            instruction=int(instruction.split("@")[1])
         else:
-            instruction="null"
+            return "null"
         return instruction
-
-parse=Parser()
-comd="comp;jmp"
-d=parse.dest(comd)
-c=parse.comp(comd)
-e=parse.jump(comd)
-k=parse.address(comd)
-
-print(f"1: {d} 2: {c} 3: {e} 4.{k}")
+    

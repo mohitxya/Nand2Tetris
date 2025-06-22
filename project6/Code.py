@@ -1,3 +1,8 @@
+"""
+    The Code class has dest_map, comp_map and jump_map defined.
+"""
+
+
 class Code:
     def __init__(self):
         self.dest_map = {
@@ -59,9 +64,13 @@ class Code:
         return self.dest_map.get(mnemonic or "null", "000")
 
     def comp(self, mnemonic):
-        return self.comp_map.get(mnemonic, "0000000")
+        if mnemonic not in self.comp_map:
+            raise ValueError(f"Invalid comp mnemonic: {mnemonic}")
+        return self.comp_map[mnemonic]
+
 
     def jump(self, mnemonic):
         return self.jump_map.get(mnemonic or "null", "000")
     def addr(self,num):
-        return format(num, 'b')
+        return format(num, '016b')
+
