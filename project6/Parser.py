@@ -25,7 +25,7 @@ class Parser:
             instruction=instruction.split("=")[0]
             pass
         else:
-            instruction=None
+            instruction="null"
         
 
         return instruction
@@ -53,7 +53,7 @@ class Parser:
                 return temp
         elif '=' in instruction:
             # dest=comp
-            instruction=None
+            instruction="null"
         elif ';' in instruction:
             # comp;jmp
             temp=instruction.split(";")[1]
@@ -61,14 +61,14 @@ class Parser:
                 return temp
         elif instruction.upper() in self.jump_l:
             return instruction
-        return None
+        return "null"
     
     def address(self, s):
         instruction=s.replace(" ","")
         if "@" in instruction:
             instruction=instruction.split("@")[1]
         else:
-            instruction=None
+            instruction="null"
         return instruction
 
 parse=Parser()
