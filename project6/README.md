@@ -1,4 +1,4 @@
-In this project we build a simple Hack Assembler. 
+In this project we build a simple Hack Assembler using Python.
 
 #### Functionality: 
 - should support decimal addresses.
