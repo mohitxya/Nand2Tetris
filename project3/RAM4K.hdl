@@ -13,7 +13,7 @@ CHIP RAM4K {
     OUT out[16];
 
     PARTS:
-    //// Replace this comment with your code.
+    
     // Demux: route load signal to one of 8 RAM512s based on address[9..11]
     DMux8Way(in=load, sel=address[9..11], 
              a=int0, b=int1, c=int2, d=int3, 

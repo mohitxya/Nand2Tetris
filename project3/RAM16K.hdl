@@ -13,7 +13,7 @@ CHIP RAM16K {
     OUT out[16];
 
     PARTS:
-    //// Replace this comment with your code.
+    
      // Split load into 4 paths using top 2 address bits
     DMux4Way(in=load, sel=address[12..13],
              a=int0, b=int1, c=int2, d=int3);
