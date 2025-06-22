@@ -18,6 +18,7 @@
 
 from Parser import Parser
 from Code import Code
+import sys
 
 symbol_table = {
     "SP": 0, "LCL": 1, "ARG": 2, "THIS": 3, "THAT": 4,
@@ -34,9 +35,15 @@ line_number=0
 var_add=16
 
 if __name__=="__main__":
+    if len(sys.argv) != 3:
+        print("Usage: python assembler.py <inputfile.asm> <outputfile.hack>")
+        sys.exit(1)
+
+    input_file = sys.argv[1]
+    out_file=sys.argv[2]
     parse=Parser()
     code=Code()
-    with open("./program.asm","r") as file:
+    with open(input_file,"r") as file:
         # 1st pass: 
         
         for line in file:
@@ -72,7 +79,7 @@ if __name__=="__main__":
             if instruction[0]=='@' and (not instruction.split("@")[1].isdigit()):
                 sym=instruction.split("@")[1]
                 
-                if sym.upper() in symbol_table:
+                if sym in symbol_table:
                     val=symbol_table[sym]
                 else:
                     symbol_table[sym]=var_add
@@ -98,6 +105,6 @@ if __name__=="__main__":
 
     
     # After all instructions have been processed and binary list is filled:
-    with open("output.hack", "w") as out_file:
+    with open(out_file, "w") as out_file:
         for line in binary:
             out_file.write(line + "\n")
