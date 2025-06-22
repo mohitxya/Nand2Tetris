@@ -71,6 +71,6 @@ class Code:
 
     def jump(self, mnemonic):
         return self.jump_map.get(mnemonic or "null", "000")
-    def addr(self,num):
+    def address(self,num):
         return format(num, '016b')
 
