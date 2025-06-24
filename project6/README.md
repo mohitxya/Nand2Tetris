@@ -6,3 +6,4 @@ In this project we build a simple Hack Assembler using Python.
 - Two passes: 
     - In first pass we resolve the labels. (assign addresses)
     - In second pass we resolve the variables. (assign addresses)
+    
