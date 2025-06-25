@@ -2,13 +2,13 @@
 - We build implement a Translator capable of translating from our Virtual Machine Code to Hack Assembly code. 
 - As far as this project is concerned, only arithmetic, logical and memory access commands are implemented.
 
-** VM Code **:
+**VM Code**:
 ``` vm code
 push constant 7
 
 ```
 
-would transform to ** Hack Assembly **:
+would transform to **Hack Assembly**:
 
 ``` hack assembly
 @7        // D = 7
