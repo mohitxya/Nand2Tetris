@@ -1,9 +1,10 @@
 class CodeWriter:
     def __init__(self):
         self.filename = None
-        self.name=self.filename.split('.')[0] if self.filename else None
+        self.name=None  # Name of the file without extension
         # File to write the assembly code
         self.file = None
+        self.label_counter = 0  # For generating unique labels
         # Memory segment base addresses
         self.segment_pointers = {
             "local": "LCL",     # RAM[1] points to local segment
@@ -16,7 +17,7 @@ class CodeWriter:
         self.fixed_segments = {
             "temp": 5,      # temp 0-7 maps to RAM[5-12]
             "pointer": 3,   # pointer 0-1 maps to RAM[3-4] (THIS/THAT)
-            "static": 16    # static variables start at RAM[16]
+            "static": 16    # static variables start at RAM[16], like variables.
         }
         
         # Stack pointer
@@ -28,6 +29,7 @@ class CodeWriter:
         if isinstance(filename, str):
             # If a string is provided, treat it as a filename
             self.filename = filename
+            self.name=self.filename.split('.')[0] if self.filename else None
             self.file = open(filename, 'w')
         else:
             raise ValueError("Filename must be a string.")
@@ -65,13 +67,42 @@ class CodeWriter:
                 self.write("M=!M")    # NOT the value
                 
         elif command in ['eq', 'gt', 'lt']:
-            # Comparison operations (more complex - need labels)
+            # Comparison operations (need labels for branching)
             self.write(f"// {command}")
             self.write("@SP")
-            self.write("AM=M-1")
-            self.write("D=M")
-            self.write("A=A-1")
-            # TO DO: Implement comparison logic with labels
+            self.write("AM=M-1")  # Decrement SP and go to top of stack
+            self.write("D=M")     # Store first value in D
+            self.write("A=A-1")   # Go to second value
+            self.write("D=M-D")   # D = second - first
+            
+            # Generate unique labels
+            true_label = f"{command.upper()}_TRUE_{self.label_counter}"
+            end_label = f"{command.upper()}_END_{self.label_counter}"
+            self.label_counter += 1
+            
+            self.write(f"@{true_label}")
+            
+            if command == 'eq':
+                self.write("D;JEQ")   # Jump if equal (D == 0)
+            elif command == 'gt':
+                self.write("D;JGT")   # Jump if greater (D > 0)
+            elif command == 'lt':
+                self.write("D;JLT")   # Jump if less (D < 0)
+            
+            # False case: push 0
+            self.write("@SP")
+            self.write("A=M-1")
+            self.write("M=0")
+            self.write(f"@{end_label}")
+            self.write("0;JMP")
+            
+            # True case: push -1 (true in Hack)
+            self.write(f"({true_label})")
+            self.write("@SP")
+            self.write("A=M-1")
+            self.write("M=-1")
+            
+            self.write(f"({end_label})")
             
         else:
             raise ValueError(f"Unknown arithmetic command: {command}")
@@ -106,11 +137,14 @@ class CodeWriter:
                     self.write(f"// push temp {index}")
                     self.write(f"@{self.fixed_segments[segment] + int(index)}")
                 elif segment == 'pointer':
-                    self.write(f"// push pointer {index}")
-                    self.write(f"@{self.fixed_segments[segment] + int(index)}")
+                    if index in ['0', '1']:
+                        self.write(f"// push pointer {index}")
+                        self.write(f"@{self.fixed_segments[segment] + int(index)}")
+                    else:
+                        raise ValueError(f"Invalid pointer index: {index}. Must be 0 or 1.")
                 elif segment == 'static':
                     self.write(f"// push static {index}")
-                    self.write(f"@{self.fixed_segments[segment] + int(index)}")
+                    self.write(f"@{self.name}.{int(index)}")
                 
                 self.write("D=M")
                 self.write("@SP")
@@ -136,19 +170,26 @@ class CodeWriter:
                 self.write("A=M")
                 self.write("M=D")  # Store value at address in R13
             elif segment in self.fixed_segments:
+                self.write(f"// pop {segment} {index}")
+                self.write("@SP")
+                self.write("AM=M-1")  # Decrement SP and go to top of stack
+                self.write("D=M")     # Read value FROM stack into D
+                
                 if segment == 'temp':
-                    self.write(f"// pop temp {index}")
                     self.write(f"@{self.fixed_segments[segment] + int(index)}")
                 elif segment == 'pointer':
-                    self.write(f"// pop pointer {index}")
-                    self.write(f"@{self.fixed_segments[segment] + int(index)}")
+                    if index in ['0', '1']:
+                        self.write(f"@{self.fixed_segments[segment] + int(index)}")
+                    else:
+                        raise ValueError(f"Invalid pointer index: {index}. Must be 0 or 1.")
                 elif segment == 'static':
-                    self.write(f"// pop static {index}")
-                    self.write(f"@{self.fixed_segments[segment] + int(index)}")
+                    self.write(f"@{self.name}.{int(index)}")
                 
-                self.write("D=M")
-                self.write("@SP")
-                self.write("AM=M-1")
+                self.write("M=D")     # Store value TO the target location
+            else:
+                raise ValueError(f"Cannot pop to segment: {segment}")
+        else:
+            raise ValueError(f"Unknown command: {command}")
 
     def close(self):
         self.file.close()
