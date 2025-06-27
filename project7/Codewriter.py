@@ -1,6 +1,8 @@
 class CodeWriter:
     def __init__(self):
         self.filename = None
+        self.name=self.filename.split('.')[0] if self.filename else None
+        # File to write the assembly code
         self.file = None
         # Memory segment base addresses
         self.segment_pointers = {
@@ -49,6 +51,7 @@ class CodeWriter:
                 self.write("M=D&M")   # Second = Second & First
             elif command == 'or':
                 self.write("M=D|M")   # Second = Second | First
+            
                 
         elif command in ['neg', 'not']:
             # Unary operations
@@ -72,6 +75,80 @@ class CodeWriter:
             
         else:
             raise ValueError(f"Unknown arithmetic command: {command}")
+    def writePushPop(self, command, segment, index):
+        command = command.lower()
+        segment = segment.lower()
+        
+        if command == 'push':
+            if segment == 'constant':
+                self.write(f"// push constant {index}")
+                self.write(f"@{index}")
+                self.write("D=A")
+                self.write("@SP")
+                self.write("A=M")
+                self.write("M=D")
+                self.write("@SP")
+                self.write("M=M+1")
+            elif segment in self.segment_pointers:
+                self.write(f"// push {segment} {index}")
+                self.write(f"@{self.segment_pointers[segment]}")
+                self.write("D=M")
+                self.write(f"@{index}")
+                self.write("A=D+A")  # A points to the segment + index
+                self.write("D=M")
+                self.write("@SP")   
+                self.write("A=M")
+                self.write("M=D")
+                self.write("@SP")   
+                self.write("M=M+1")
+            elif segment in self.fixed_segments:
+                if segment == 'temp':
+                    self.write(f"// push temp {index}")
+                    self.write(f"@{self.fixed_segments[segment] + int(index)}")
+                elif segment == 'pointer':
+                    self.write(f"// push pointer {index}")
+                    self.write(f"@{self.fixed_segments[segment] + int(index)}")
+                elif segment == 'static':
+                    self.write(f"// push static {index}")
+                    self.write(f"@{self.fixed_segments[segment] + int(index)}")
+                
+                self.write("D=M")
+                self.write("@SP")
+                self.write("A=M")
+                self.write("M=D")
+                self.write("@SP")
+                self.write("M=M+1")
+            else:
+                raise ValueError(f"Unknown segment for push: {segment}")
+        elif command == 'pop':
+            if segment in self.segment_pointers:
+                self.write(f"// pop {segment} {index}")
+                self.write(f"@{self.segment_pointers[segment]}")
+                self.write("D=M")
+                self.write(f"@{index}")
+                self.write("D=D+A")
+                self.write("@R13")
+                self.write("M=D")  # Store address in R13
+                self.write("@SP")
+                self.write("AM=M-1")  # Decrement SP and go to top of
+                self.write("D=M")
+                self.write("@R13")
+                self.write("A=M")
+                self.write("M=D")  # Store value at address in R13
+            elif segment in self.fixed_segments:
+                if segment == 'temp':
+                    self.write(f"// pop temp {index}")
+                    self.write(f"@{self.fixed_segments[segment] + int(index)}")
+                elif segment == 'pointer':
+                    self.write(f"// pop pointer {index}")
+                    self.write(f"@{self.fixed_segments[segment] + int(index)}")
+                elif segment == 'static':
+                    self.write(f"// pop static {index}")
+                    self.write(f"@{self.fixed_segments[segment] + int(index)}")
+                
+                self.write("D=M")
+                self.write("@SP")
+                self.write("AM=M-1")
 
     def close(self):
         self.file.close()
