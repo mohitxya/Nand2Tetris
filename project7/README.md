@@ -23,3 +23,22 @@ M=D       // *SP = D
 M=M+1     // SP++
 
 ```
+
+#### *File Structure*:
+```
+project7/
+├── __pycache__/
+├── tests/
+│   ├── BasicTest.vm
+│   ├── PointerTest.vm
+│   ├── SimpleAdd.vm
+│   ├── StackTest.vm
+│   └── StaticTest.vm
+├── Codewriter.py        # Writes Hack assembly code from VM commands
+├── Parser.py            # Parses each line of the VM input
+├── main.py              # Entry point for the VM translator
+├── output.asm           # Output Hack assembly file
+└── README.md            # Project description and usage guide
+
+
+```
